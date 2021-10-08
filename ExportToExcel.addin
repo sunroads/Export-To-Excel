@@ -1,0 +1,26 @@
+﻿<RevitAddIns>
+
+
+	<AddIn Type="Command">
+		<Name>FilteringElements</Name>
+		<Assembly>ExportToExcel.dll</Assembly>
+		<AddInId>
+			9E779BB0-8C12-4EB8-AB75-B1F9E4831DB1
+		</AddInId>
+		<FullClassName>ExportToExcel.WallExport</FullClassName>
+		<Text>Wall Export</Text>
+		<Description>Wall Export Test</Description>
+		<VendorId>VendorId</VendorId>
+		<VendorDescription>VendorDescription</VendorDescription>
+		<VisibilityMode>NotVisibleWhenNoActiveDocument</VisibilityMode>
+	</AddIn>
+
+
+
+
+
+
+
+
+
+</RevitAddIns>
