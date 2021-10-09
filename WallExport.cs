@@ -21,54 +21,27 @@ namespace ExportToExcel
             Document doc = commandData.Application.ActiveUIDocument.Document;
 
             FilteredElementCollector collector = new FilteredElementCollector(doc);
+            IList<Element> _elements = collector.OfCategory(BuiltInCategory.OST_Walls).WhereElementIsNotElementType().ToElements();
+            
+            // I create this class to structure the data we want to export
+            var csv = new StringBuilder();
+            string headers = string.Format("{0},{1},{2}", "ElementName", "Category", "Id");
+            csv.AppendLine(headers);
 
-
-            List<Parameter> ElemWidthList = new List<Parameter>();
-           
-            foreach (Element e in AllWalls)
+            foreach (Element elem in _elements)
             {
-                
-                ElemWidthList.Add(e.LookupParameter("Width"));
-                
-
-                    if (parameterValue != "" || parameterValue != "")
-                    {
-                        filteredElements.Add(element); // you have all elements that need to fill this parameter.
-                        filteredElementIds.Add(element.Id); // or you could save the id directly.
-
-                        // or write a default value 
-                        // elementParameter.Set("default value");                    
-
-                    }
+                Parameter param = elem.LookupParameter("Comments");
+                if ( param != null && param.AsString() != "")
+                {
+                    string newLine = string.Format("{0},{1},{2}", elem.Name, elem.Category.Name, elem.Id.ToString());
+                    csv.AppendLine(newLine);
                 }
             }
-
-
-
-
-
-
-
-
-
-            //using (var csvWriter = new CsvHelper.CsvWriter(writer)
-            //{
-            //    foreach (string s in AllWallsExcelKnows)
-            //    {
-            //        csvWriter.WriteField(s);
-
-            //    }
-
-            //}
-
-
-
-
+            File.WriteAllText(@"C:/fran.csv", csv.ToString());
 
 
             return Result.Succeeded;
 
         }
     }
-
 }
