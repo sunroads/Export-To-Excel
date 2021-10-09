@@ -21,45 +21,27 @@ namespace ExportToExcel
             Document doc = commandData.Application.ActiveUIDocument.Document;
 
             FilteredElementCollector collector = new FilteredElementCollector(doc);
-            ElementCategoryFilter FilterWalls = new ElementCategoryFilter(BuiltInCategory.OST_Walls);
-            IList <Element> AllWalls = collector.WherePasses(FilterWalls).WhereElementIsNotElementType().ToElements();
 
-            
-            List<string> AllWallsExcelKnows = new List<string>();
 
+            List<Parameter> ElemWidthList = new List<Parameter>();
+           
             foreach (Element e in AllWalls)
             {
-
-                AllWallsExcelKnows.Add(e.Name.ToString());
                 
-            }
+                ElemWidthList.Add(e.LookupParameter("Width"));
+                
 
-            //List<Parameter> ElemWidthList = new List<Parameter>();
+                    if (parameterValue != "" || parameterValue != "")
+                    {
+                        filteredElements.Add(element); // you have all elements that need to fill this parameter.
+                        filteredElementIds.Add(element.Id); // or you could save the id directly.
 
-            //foreach (Element e in AllWalls)
-            //{
+                        // or write a default value 
+                        // elementParameter.Set("default value");                    
 
-            //    ElemWidthList.Add(e.LookupParameter("Width"));
-
-
-            //}
-
-            using (var writer = new StreamWriter("C:\\Users\\b-filippov\\Desktop\\test\\Excel\\elements.csv"))
-
-
-            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-            {
-                foreach (var s in AllWallsExcelKnows)
-                {
-                    csv.WriteField(s);
+                    }
                 }
-
-                //writer.Flush();
-                
-
             }
-
-
 
 
 
