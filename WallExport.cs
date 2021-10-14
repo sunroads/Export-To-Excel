@@ -67,7 +67,7 @@ namespace ExportToExcel
 
             ExcelPackage package = new ExcelPackage();
             ExcelWorksheet ws = package.Workbook.Worksheets.Add("Sheet");
-            var file = new FileInfo(@"D:\WallsLE 2 ячейка.xlsx");
+            var file = new FileInfo(@"D:\WallsLE2.xlsx");
 
             using (ExcelRange Rng = ws.Cells["A1:E2"])
             {
