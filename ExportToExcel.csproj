@@ -68,7 +68,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="WallExport.cs" />
+    <Compile Include="Export.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -78,6 +78,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetDir)"."" "$(AppData)\Autodesk\Revit\Addins\2019\"
-</PostBuildEvent>
+
+copy "$(ProjectDir)ExportToExcel.addin" "$(AppData)\Autodesk\Revit\Addins\2019"</PostBuildEvent>
   </PropertyGroup>
 </Project>
