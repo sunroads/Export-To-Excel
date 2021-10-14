@@ -7,8 +7,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Autodesk.Revit.Attributes;
 using System.IO;
-using CsvHelper;
+using OfficeOpenXml;
+using OfficeOpenXml.Table;
 using System.Globalization;
+
 
 namespace ExportToExcel
 {
@@ -17,76 +19,97 @@ namespace ExportToExcel
     {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             Document doc = commandData.Application.ActiveUIDocument.Document;
 
+            //COLLECTOR
             FilteredElementCollector collector = new FilteredElementCollector(doc);
-            ElementCategoryFilter FilterWalls = new ElementCategoryFilter(BuiltInCategory.OST_Walls);
-            IList <Element> AllWalls = collector.WherePasses(FilterWalls).WhereElementIsNotElementType().ToElements();
+            IList<Element> _elementsDB = collector.OfCategory(BuiltInCategory.OST_Walls).WhereElementIsNotElementType().ToElements();
+            ICollection<ElementId> _elementsIds = collector.OfCategory(BuiltInCategory.OST_Walls).WhereElementIsNotElementType().ToElementIds();
 
-            
-            List<string> AllWallsExcelKnows = new List<string>();
 
-            foreach (Element e in AllWalls)
-            {
-
-                AllWallsExcelKnows.Add(e.Name.ToString());
-                
-            }
-
-            //List<Parameter> ElemWidthList = new List<Parameter>();
-
-            //foreach (Element e in AllWalls)
+            //foreach (Element e in _elementsDB)
             //{
 
-            //    ElemWidthList.Add(e.LookupParameter("Width"));
+            //    List<Parameter> _NoHeightParameter = new List<Parameter>();
+
+            //    if (e.LookupParameter("Неприсоединенная высота") == null)
+            //    {
+
+            //        TaskDialog.Show("No Height", e.Name + " " + e.Id + " doesn't have Height Parameter");
+            //        //_NoHeightParameter.Add(e.LookupParameter("Неприсоединенная высота"));
+            //        //_NoHeightParameter.Count
+            //    }                               
+
+            //}   
 
 
-            //}
-
-            using (var writer = new StreamWriter("C:\\Users\\b-filippov\\Desktop\\test\\Excel\\elements.csv"))
+            List<double> _pHeight = new List<double>();
 
 
-            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            foreach (Element e in _elementsDB)
             {
-                foreach (var s in AllWallsExcelKnows)
+
+
+                if (e.LookupParameter("Неприсоединенная высота") != null)
                 {
-                    csv.WriteField(s);
+                    _pHeight.Add(UnitUtils.ConvertFromInternalUnits(e.LookupParameter("Неприсоединенная высота").AsDouble(), DisplayUnitType.DUT_MILLIMETERS));
+                }
+                else
+                {
+                    continue;
                 }
 
-                //writer.Flush();
-                
-
             }
 
 
+            //    ////////////////////////////////////////////////////////////////EXCEL
+
+            ExcelPackage package = new ExcelPackage();
+            ExcelWorksheet ws = package.Workbook.Worksheets.Add("Sheet");
+            var file = new FileInfo(@"D:\WallsLE 2 ячейка.xlsx");
+
+            using (ExcelRange Rng = ws.Cells["A1:E2"])
+            {
+                //Indirectly access ExcelTableCollection class
+                ExcelTable table = ws.Tables.Add(Rng, "Table");
 
 
+                table.Columns[0].Name = "Name";
+                table.Columns[1].Name = "ID";
+                table.Columns[2].Name = "Height";
 
+            }
 
-
-
-
-
-
-            //using (var csvWriter = new CsvHelper.CsvWriter(writer)
+            //1-st row
+            //int col = 1;
+            //for (int row = 1; row <= _elementsDB.Count; row++)
             //{
-            //    foreach (string s in AllWallsExcelKnows)
-            //    {
-            //        csvWriter.WriteField(s);
-
-            //    }
-
+            //    ws.Cells[row, col].Value = _elementsDB[row-1].Name;
             //}
+            //2-nd row
+            int col = 1;
+            for (int row = 2; row - 1 <= _elementsDB.Count; row++)
+            {
+                ws.Cells[row, col].Value = _elementsDB[row - 2].Name;
+            }
 
+            int col2 = 2;
+            for (int row = 2; row - 1 <= _elementsIds.Count; row++)
+            {
+                ws.Cells[row, col2].Value = _elementsIds.ElementAt(row - 2);
+            }
 
+            int col3 = 3;
+            for (int row = 2; row - 1 <= _elementsIds.Count; row++)
+            {
+                ws.Cells[row, col3].Value = _pHeight[row - 2];
+            }
 
-
-
+            package.SaveAs(new FileInfo(file.ToString()));
 
             return Result.Succeeded;
 
         }
     }
-
 }
